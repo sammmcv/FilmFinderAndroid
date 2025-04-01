@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Permitir conexiones HTTP claras para desarrollo -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Para emulador -->
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <!-- Para dispositivos físicos, agrega tu IP aquí -->
+        <domain includeSubdomains="true"> 192.168.100.112</domain>
+        <!-- Puedes agregar más dominios según sea necesario -->
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+</network-security-config>
