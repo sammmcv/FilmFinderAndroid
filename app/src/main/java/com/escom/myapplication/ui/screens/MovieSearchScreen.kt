@@ -39,12 +39,29 @@ fun MovieSearchScreen(
     var showingDetails by remember { mutableStateOf(false) }
     var showingFavorites by remember { mutableStateOf(false) }
     var showingUserManagement by remember { mutableStateOf(false) }
+    var showingSearchHistory by remember { mutableStateOf(false) }  // Historial del usuario
+    var showingAllFavorites by remember { mutableStateOf(false) }  // Todos los favoritos
+    var showingAllSearchHistory by remember { mutableStateOf(false) }  // Nuevo estado para historial de todos
     
     when {
         showingUserManagement -> {
             UserManagementScreen(
                 authViewModel = authViewModel,
                 onBackPressed = { showingUserManagement = false }
+            )
+        }
+        showingSearchHistory -> {
+            SearchHistoryScreen(
+                movieViewModel = movieViewModel,
+                user = user,
+                onBackPressed = { showingSearchHistory = false }
+            )
+        }
+        showingAllSearchHistory -> {  // Nuevo caso para mostrar el historial de todos
+            AllSearchHistoryScreen(
+                movieViewModel = movieViewModel,
+                user = user,
+                onBackPressed = { showingAllSearchHistory = false }
             )
         }
         showingFavorites -> {
@@ -57,6 +74,13 @@ fun MovieSearchScreen(
                     showingFavorites = false
                     showingDetails = true
                 }
+            )
+        }
+        showingAllFavorites -> {
+            AllFavoritesScreen(
+                movieViewModel = movieViewModel,
+                user = user,
+                onBackPressed = { showingAllFavorites = false }
             )
         }
         showingDetails && movieDetail != null -> {
@@ -113,38 +137,90 @@ fun MovieSearchScreen(
                             Spacer(modifier = Modifier.height(12.dp))
                             
                             // Botones de acción
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End,
-                                verticalAlignment = Alignment.CenterVertically
+                            Column(
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                // Botón para gestión de usuarios (solo para administradores)
-                                if (user.role == "ADMIN") {
+                                // Primera fila de botones
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Botón para gestión de usuarios (solo para administradores)
+                                    if (user.role == "ADMIN") {
+                                        TextButton(
+                                            onClick = { showingUserManagement = true },
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(end = 4.dp)
+                                        ) {
+                                            Text("Gestionar Usuarios")
+                                        }
+                                    } else {
+                                        // Espacio vacío para mantener la simetría cuando no hay botón de admin
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
+                                    
+                                    // Botón para ver historial
                                     TextButton(
-                                        onClick = { showingUserManagement = true },
-                                        modifier = Modifier.padding(end = 4.dp)
+                                        onClick = { showingSearchHistory = true },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(start = 4.dp)
                                     ) {
-                                        Text("Gestionar Usuarios")
+                                        Text("Historial")
                                     }
                                 }
                                 
-                                // Botón para ver favoritos
-                                TextButton(
-                                    onClick = { showingFavorites = true },
-                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                
+                                // Segunda fila de botones
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("Favoritos")
+                                    // Botón para ver favoritos
+                                    TextButton(
+                                        onClick = { showingFavorites = true },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(end = 4.dp)
+                                    ) {
+                                        Text("Favoritos")
+                                    }
+                                    
+                                    // Botón para cerrar sesión
+                                    TextButton(
+                                        onClick = onLogout,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(start = 4.dp),
+                                        colors = ButtonDefaults.textButtonColors(
+                                            contentColor = MaterialTheme.colorScheme.error
+                                        )
+                                    ) {
+                                        Text("Cerrar Sesión")
+                                    }
                                 }
                                 
-                                // Botón para cerrar sesión
-                                TextButton(
-                                    onClick = onLogout,
-                                    modifier = Modifier.padding(start = 4.dp),
-                                    colors = ButtonDefaults.textButtonColors(
-                                        contentColor = MaterialTheme.colorScheme.error
-                                    )
-                                ) {
-                                    Text("Cerrar Sesión")
+                                // Botón para ver todos los favoritos (solo para administradores)
+                                if (user.role == "ADMIN") {
+                                    Button(
+                                        onClick = { showingAllFavorites = true },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text("Ver Favoritos de Todos los Usuarios")
+                                    }
+                                    
+                                    // Añadir botón para ver historial de todos los usuarios
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Button(
+                                        onClick = { showingAllSearchHistory = true },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text("Ver Historial de Todos los Usuarios")
+                                    }
                                 }
                             }
                         }

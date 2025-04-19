@@ -39,6 +39,7 @@ class MovieViewModel(context: Context) : ViewModel() {
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
+    
 
     fun searchMovies(title: String, page: Int, userId: Long) {
         _loading.value = true
@@ -144,5 +145,44 @@ class MovieViewModel(context: Context) : ViewModel() {
 
     fun clearMovieDetail() {
         _movieDetail.value = null
+    }
+
+    // LiveData para almacenar todos los favoritos (para administradores)
+    private val _allFavoriteMovies = MutableLiveData<List<Movie>>(emptyList())
+    val allFavoriteMovies: LiveData<List<Movie>> = _allFavoriteMovies
+    
+    // Función para obtener todos los favoritos
+    fun getAllFavoriteMovies() {
+        _loading.value = true
+        _error.value = null
+    
+        viewModelScope.launch {
+            val result = movieRepository.getAllFavoriteMovies()
+            _loading.value = false
+    
+            result.fold(
+                onSuccess = { _allFavoriteMovies.value = it },
+                onFailure = { _error.value = it.message }
+            )
+        }
+    }
+
+    // Add this LiveData for all users' search history
+    private val _allSearchHistory = MutableLiveData<List<SearchHistory>>()
+    val allSearchHistory: LiveData<List<SearchHistory>> = _allSearchHistory
+
+    fun getAllSearchHistory() {
+        _loading.value = true
+        _error.value = null
+    
+        viewModelScope.launch {
+            val result = movieRepository.getAllSearchHistory()
+            _loading.value = false
+    
+            result.fold(
+                onSuccess = { _allSearchHistory.value = it },
+                onFailure = { _error.value = it.message }
+            )
+        }
     }
 }

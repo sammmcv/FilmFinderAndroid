@@ -93,4 +93,30 @@ class MovieRepository(private val context: Context) {
             Result.failure(e)
         }
     }
+    
+    suspend fun getAllSearchHistory(): Result<List<SearchHistory>> {
+        return try {
+            val response = apiService.getAllSearchHistory()
+            if (response.isSuccessful) {
+                Result.success(response.body() ?: emptyList())
+            } else {
+                Result.failure(Exception("Error: ${response.code()} ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    suspend fun getAllFavoriteMovies(): Result<List<Movie>> {
+        return try {
+            val response = apiService.getAllFavoriteMovies()
+            if (response.isSuccessful) {
+                Result.success(response.body() ?: emptyList())
+            } else {
+                Result.failure(Exception("Error: ${response.code()} ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

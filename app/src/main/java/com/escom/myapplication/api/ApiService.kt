@@ -66,4 +66,10 @@ interface ApiService {
     suspend fun deleteUser(
         @Path("id") userId: Long
     ): Response<Void>
+    
+    @GET("api/movies/favorites/all")
+    suspend fun getAllFavoriteMovies(): Response<List<Movie>>
+    
+    @GET("api/history/all")
+    suspend fun getAllSearchHistory(): Response<List<SearchHistory>>
 }

@@ -11,5 +11,6 @@ data class User(
     val lastName: String = "",
     val role: String = "USER",
     val password: String = "",
-    val profilePhoto: String? = null // URL of the profile photo
+    val profilePhoto: String? = null, // URL of the profile photo
+    val isAdmin: Boolean = false
 )

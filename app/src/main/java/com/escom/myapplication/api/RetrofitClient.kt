@@ -41,8 +41,7 @@ object RetrofitClient {
                 .build()
 
             // Use a hardcoded base URL instead of accessing it from resources
-            // This avoids the need for the R class reference
-            val baseUrl = "http://192.168.20.67:8080" // For emulator pointing to localhost
+            val baseUrl = "http://192.168.100.112:8080" // For emulator pointing to localhost
             // If you're testing on a real device, you might need to use your computer's IP address
 
             // Crear instancia de Retrofit
