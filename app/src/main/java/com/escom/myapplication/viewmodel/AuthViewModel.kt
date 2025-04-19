@@ -7,26 +7,35 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escom.myapplication.model.User
 import com.escom.myapplication.repository.UserRepository
+import com.escom.myapplication.utils.SessionManager
 import kotlinx.coroutines.launch
 
-class AuthViewModel(context: Context) : ViewModel() {
+class AuthViewModel(private val context: Context) : ViewModel() {
     private val userRepository = UserRepository(context)
+    private val sessionManager = SessionManager(context)
     
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> = _user
     
-    private val _loading = MutableLiveData<Boolean>(false)
+    private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading
     
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
     
-    // For user management
-    private val _users = MutableLiveData<List<User>>(emptyList())
+    private val _users = MutableLiveData<List<User>>()
     val users: LiveData<List<User>> = _users
     
     private val _operationMessage = MutableLiveData<String?>()
     val operationMessage: LiveData<String?> = _operationMessage
+
+    init {
+        // Verificar si hay una sesión guardada al iniciar el ViewModel
+        val savedUser = sessionManager.getUserSession()
+        if (savedUser != null && sessionManager.isLoggedIn()) {
+            _user.value = savedUser
+        }
+    }
     
     fun login(email: String, password: String) {
         _loading.value = true
@@ -37,7 +46,10 @@ class AuthViewModel(context: Context) : ViewModel() {
             _loading.value = false
             
             result.fold(
-                onSuccess = { _user.value = it },
+                onSuccess = { 
+                    _user.value = it
+                    sessionManager.saveUserSession(it)
+                },
                 onFailure = { _error.value = it.message }
             )
         }
@@ -52,13 +64,17 @@ class AuthViewModel(context: Context) : ViewModel() {
             _loading.value = false
             
             result.fold(
-                onSuccess = { _user.value = it },
+                onSuccess = { 
+                    _user.value = it
+                    sessionManager.saveUserSession(it)
+                },
                 onFailure = { _error.value = it.message }
             )
         }
     }
     
     fun logout() {
+        sessionManager.clearSession()
         _user.value = null
     }
     
@@ -70,7 +86,6 @@ class AuthViewModel(context: Context) : ViewModel() {
         _operationMessage.value = null
     }
     
-    // User management functions
     fun getAllUsers() {
         _loading.value = true
         _error.value = null

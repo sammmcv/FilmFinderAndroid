@@ -49,7 +49,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    
+    // ... otras dependencias
+    implementation ("com.google.code.gson:gson:2.10.1")
     // Add AppCompat dependency
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.cardview:cardview:1.0.0")
